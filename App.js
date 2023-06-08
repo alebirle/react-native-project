@@ -1,11 +1,14 @@
+import 'react-native-gesture-handler';
 import React, { useState } from 'react'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import Home from './src/Home';
 import Game from './src/Game'
-import { Button, View, TouchableOpacity, StyleSheet, Modal, Text } from 'react-native';
+import { Button, View, TouchableOpacity, StyleSheet, Modal, Text, Image } from 'react-native';
 
 const Stack = createNativeStackNavigator();
+const Drawer = createDrawerNavigator();
 
 const CustomAlert = ({ visible, message, onClose }) => {
   return (
@@ -22,7 +25,7 @@ const CustomAlert = ({ visible, message, onClose }) => {
   );
 };
 
-const CustomHeader = ({ onButton1Press, onButton2Press }) => {
+const CustomHeader = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   const handleShowAlert = () => {
@@ -41,11 +44,36 @@ const CustomHeader = ({ onButton1Press, onButton2Press }) => {
   );
 };
 
+const CustomDrawerContentComponent = ({ navigation, ...props }) => {
+  return (
+    <DrawerContentScrollView>
+      <View style={{ padding: 16 }}>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>Menu</Text>
+      </View>
+
+      <DrawerItemList {...props} />
+
+      <Image source={require('./assets/favicon.png')} style={{ alignSelf: 'center', width: 50, height: 50}}/>
+    </DrawerContentScrollView>
+  );
+};
+
 function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen 
+      <Drawer.Navigator 
+        initialRouteName="Home"
+        drawerContent={props => <CustomDrawerContentComponent {...props} />}
+        screenOptions={{
+          drawerStyle: {
+            backgroundColor: 'lightblue',
+            width: 250,
+          },
+          drawerActiveTintColor: 'dimgray',
+          drawerInactiveTintColor: 'dimgray',
+        }}
+      >
+        <Drawer.Screen 
           name="Home" 
           component={ Home } 
           options={{ 
@@ -55,8 +83,8 @@ function App() {
             )
           }} 
         />
-        <Stack.Screen name="Game" component={ Game } options={{ headerStyle: { backgroundColor: 'lightblue'}}} />
-      </Stack.Navigator>
+        <Drawer.Screen name="Game" component={ Game } options={{ headerStyle: { backgroundColor: 'lightblue'}}} />
+      </Drawer.Navigator>
     </NavigationContainer>
   );
 }
@@ -100,4 +128,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  headerContainer: {
+    marginRight: 20
+  }
 });
