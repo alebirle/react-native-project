@@ -1,22 +1,36 @@
 import React from 'react';
 import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
+import { useAppContext } from '../App.provider';
 
 function Home({ navigation }) {
+  const appContext = useAppContext();
+
   return (
     <View>
       <Text style={styles.greeting}>Please type your names:</Text>
       <TextInput
+        value={appContext.currentGame.xPlayer.name}
         style={styles.playerInput}
         placeholder="Player 1 (X)"
         placeholderTextColor={'gray'}
+        onChangeText={(value) =>
+          appContext.handlePlayerChosen('xPlayer', value)
+        }
       />
       <TextInput
+        value={appContext.currentGame.oPlayer.name}
         style={styles.playerInput}
         placeholder="Player 2 (O)"
         placeholderTextColor={'gray'}
+        onChangeText={(value) =>
+          appContext.handlePlayerChosen('oPlayer', value)
+        }
       />
-      <TouchableOpacity onPress={() => navigation.navigate('Game')}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('Game')}
+      >
         <Text style={styles.text}>Start game</Text>
       </TouchableOpacity>
     </View>
@@ -25,17 +39,17 @@ function Home({ navigation }) {
 export default Home;
 
 const styles = StyleSheet.create({
-  text: {
-    padding: 5,
-    marginTop: 10,
+  button: {
     width: 200,
     height: 40,
-    textAlign: 'center',
-    verticalAlign: 'middle',
-    color: 'white',
     alignSelf: 'center',
     backgroundColor: 'skyblue',
     borderRadius: 1,
+    justifyContent: 'center',
+  },
+  text: {
+    color: 'white',
+    textAlign: 'center',
   },
   greeting: {
     marginVertical: 30,

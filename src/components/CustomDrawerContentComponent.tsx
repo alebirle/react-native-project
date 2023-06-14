@@ -20,7 +20,10 @@ export const CustomDrawerContentComponent = (props) => {
         descriptors={descriptors}
       />
 
-      <Image source={require('../assets/favicon.png')} style={styles.image} />
+      <Image
+        source={require('../../assets/favicon.png')}
+        style={styles.image}
+      />
     </DrawerContentScrollView>
   );
 };
