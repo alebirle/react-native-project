@@ -5,28 +5,27 @@ import { useAppContext } from '../App.provider';
 
 export const Cell = (props) => {
   const appContext = useAppContext();
-  const [state, setState] = useState('');
-  const { player, setPlayer, board, setBoard, gameWon, setGameWon, row, col } =
-    props;
+  const { player, setPlayer, gameWon, setGameWon, row, col } = props;
   const [style, setStyle] = useState(styles.button);
 
   const addText = () => {
-    if (state.length === 0) {
+    if (appContext.currentGame.board[row][col].length === 0) {
       const updatedStyle = {
         ...style,
         color: player === 'X' ? 'purple' : 'navy',
       };
 
-      const newBoard = [...board];
-      newBoard[row][col] = player;
-      setBoard(newBoard);
+      appContext.handleMove(row, col, player);
 
-      if (checkForWinner()) {
+      const hasWinner = checkForWinner();
+      if (hasWinner) {
         setGameWon(true);
         appContext.handleWinner(player);
+      } else if (hasWinner == null) {
+        setGameWon(true);
+        appContext.handleWinner('');
       }
 
-      setState(player);
       setStyle(updatedStyle);
       setPlayer((prevPlayer) => {
         return prevPlayer === 'X' ? 'O' : 'X';
@@ -34,7 +33,9 @@ export const Cell = (props) => {
     }
   };
 
-  const checkForWinner = () => {
+  const checkForWinner = (): boolean | null => {
+    const board = appContext.currentGame.board;
+
     if (
       board[1][1].length > 0 &&
       ((board[0][0] === board[1][1] && board[1][1] === board[2][2]) ||
@@ -69,13 +70,13 @@ export const Cell = (props) => {
       }
     }
 
-    return true;
+    return null;
   };
 
   return (
     <View>
       <TouchableWithoutFeedback onPress={addText} disabled={gameWon}>
-        <Text style={style}>{state}</Text>
+        <Text style={style}>{appContext.currentGame.board[row][col]}</Text>
       </TouchableWithoutFeedback>
     </View>
   );

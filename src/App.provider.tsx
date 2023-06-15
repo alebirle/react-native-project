@@ -9,16 +9,25 @@ type AppContextType = {
   pastGames: Game[];
   handlePlayerChosen: (player: string, name: string) => void;
   handleWinner: (winner: string) => void;
+  handleMove: (row: number, col: number, val: string) => void;
+  handleRestart: (xPlayerName: string, oPlayerName: string) => void;
 };
 
 const defaultValue = {
   currentGame: {
     xPlayer: { name: '', isWinner: false },
     oPlayer: { name: '', isWinner: false },
+    board: [
+      ['', '', ''],
+      ['', '', ''],
+      ['', '', ''],
+    ],
   },
   pastGames: [],
   handlePlayerChosen: () => {},
   handleWinner: () => {},
+  handleMove: () => {},
+  handleRestart: () => {},
 };
 
 type Props = {
@@ -31,6 +40,11 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
   const [currentGame, setCurrentGame] = React.useState<Game>({
     xPlayer: { name: '', isWinner: false },
     oPlayer: { name: '', isWinner: false },
+    board: [
+      ['', '', ''],
+      ['', '', ''],
+      ['', '', ''],
+    ],
   });
   const [pastGames, setPastGames] = React.useState<Game[]>([]);
 
@@ -44,17 +58,6 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
     };
     getDataFromStorage();
   }, []);
-
-  const handlePlayerChosen = React.useCallback(
-    async (player: string, name: string) => {
-      console.log((await getAppData())?.length);
-      setCurrentGame((current) => ({
-        ...current,
-        [player]: { name: name, isWinner: false },
-      }));
-    },
-    [],
-  );
 
   const getAppData = async (): Promise<Game[] | null> => {
     try {
@@ -75,6 +78,16 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
     } catch {}
   };
 
+  const handlePlayerChosen = React.useCallback(
+    (player: string, name: string) => {
+      setCurrentGame((current) => ({
+        ...current,
+        [player]: { name: name, isWinner: false },
+      }));
+    },
+    [],
+  );
+
   const handleWinner = React.useCallback(
     (winner: string) => {
       var game: Game;
@@ -83,18 +96,21 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
         game = {
           xPlayer: { name: currentGame.xPlayer.name, isWinner: true },
           oPlayer: currentGame.oPlayer,
+          board: currentGame.board,
           date: Date.now(),
         };
       } else if (winner === 'O') {
         game = {
           xPlayer: currentGame.xPlayer,
           oPlayer: { name: currentGame.oPlayer.name, isWinner: true },
+          board: currentGame.board,
           date: Date.now(),
         };
       } else {
         game = {
           xPlayer: { name: currentGame.xPlayer.name, isWinner: true },
           oPlayer: { name: currentGame.oPlayer.name, isWinner: true },
+          board: currentGame.board,
           date: Date.now(),
         };
       }
@@ -102,10 +118,36 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
       setCurrentGame(game);
       const newGamesList = [...pastGames, game];
       setPastGames(newGamesList);
-      setCurrentGame(defaultValue.currentGame);
       setAppData(newGamesList);
     },
     [currentGame, pastGames],
+  );
+
+  const handleMove = React.useCallback(
+    (row: number, col: number, val: string) => {
+      const newBoard = [...currentGame.board];
+      newBoard[row][col] = val;
+      setCurrentGame((current) => ({
+        ...current,
+        board: newBoard,
+      }));
+    },
+    [currentGame.board],
+  );
+
+  const handleRestart = React.useCallback(
+    (xPlayerName: string, oPlayerName: string) => {
+      setCurrentGame({
+        xPlayer: { name: xPlayerName, isWinner: false },
+        oPlayer: { name: oPlayerName, isWinner: false },
+        board: [
+          ['', '', ''],
+          ['', '', ''],
+          ['', '', ''],
+        ],
+      });
+    },
+    [],
   );
 
   return (
@@ -115,6 +157,8 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
         pastGames,
         handlePlayerChosen,
         handleWinner,
+        handleMove,
+        handleRestart,
       }}
     >
       {children}

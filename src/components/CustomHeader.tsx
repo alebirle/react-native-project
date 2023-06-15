@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Button, StyleSheet } from 'react-native';
+import { View, StyleSheet, Pressable, Text } from 'react-native';
 import { CustomAlert } from './CustomAlert';
 
 export const CustomHeader = () => {
@@ -15,7 +15,9 @@ export const CustomHeader = () => {
 
   return (
     <View style={styles.headerContainer}>
-      <Button onPress={handleShowAlert} title="Button?" color="skyblue" />
+      <Pressable onPress={handleShowAlert}>
+        <Text>Button?</Text>
+      </Pressable>
       <CustomAlert
         visible={showAlert}
         message="Wow an alert"

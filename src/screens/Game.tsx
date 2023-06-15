@@ -6,18 +6,11 @@ import { Cell } from '../components/Cell';
 const Game = ({ navigation }) => {
   const appContext = useAppContext();
   const [player, setPlayer] = useState('X');
-  const [board, setBoard] = useState([
-    ['', '', ''],
-    ['', '', ''],
-    ['', '', ''],
-  ]);
   const [gameWon, setGameWon] = useState(false);
 
   const commonProps = {
     player,
     setPlayer,
-    board,
-    setBoard,
     gameWon,
     setGameWon,
   };
@@ -40,10 +33,39 @@ const Game = ({ navigation }) => {
         {appContext.currentGame.xPlayer.name} {'(X) vs '}
         {appContext.currentGame.oPlayer.name} {'(O)'}
       </Text>
-      <Text style={styles.text}>{gameWon ? 'Game over!' : null}</Text>
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={styles.buttonText}>Back to home</Text>
-      </TouchableOpacity>
+      <Text style={styles.text}>
+        {appContext.currentGame.xPlayer.isWinner &&
+        appContext.currentGame.oPlayer.isWinner
+          ? 'Tie!'
+          : appContext.currentGame.xPlayer.isWinner
+          ? appContext.currentGame.xPlayer.name + ' won!'
+          : appContext.currentGame.oPlayer.isWinner
+          ? appContext.currentGame.oPlayer.name + ' won!'
+          : null}
+      </Text>
+      <View style={styles.actions}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            appContext.handleRestart(
+              appContext.currentGame.xPlayer.name,
+              appContext.currentGame.oPlayer.name,
+            );
+            setGameWon(false);
+          }}
+        >
+          <Text style={styles.buttonText}>Restart</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            appContext.handleRestart('', '');
+            navigation.goBack();
+          }}
+        >
+          <Text style={styles.buttonText}>Go home</Text>
+        </TouchableOpacity>
+      </View>
       <View style={styles.xo}>
         {cellPositions.map((position, index) => (
           <Cell key={index} {...commonProps} {...position} />
@@ -55,29 +77,39 @@ const Game = ({ navigation }) => {
 export default Game;
 
 const styles = StyleSheet.create({
-  buttonText: {
+  button: {
     padding: 5,
-    marginTop: 10,
     width: 100,
     height: 40,
-    textAlign: 'center',
-    verticalAlign: 'middle',
+    justifyContent: 'center',
     color: 'white',
-    alignSelf: 'center',
     backgroundColor: 'skyblue',
+    marginHorizontal: 5,
+  },
+  buttonText: {
+    color: 'white',
+    textAlign: 'center',
   },
   text: {
-    marginTop: 50,
+    marginTop: 30,
     textAlign: 'center',
     color: 'violet',
     fontWeight: 'bold',
     fontSize: 20,
   },
   xo: {
-    marginTop: 50,
+    //position: 'absolute',
+    //marginTop: '50%',
     alignSelf: 'center',
     flexDirection: 'row',
     flexWrap: 'wrap',
     width: 240,
+  },
+  actions: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+    marginVertical: 20,
+    //position: 'absolute',
+    //marginTop: '35%',
   },
 });
