@@ -6,4 +6,5 @@ export type Player = {
 export type Game = {
   xPlayer: Player;
   oPlayer: Player;
+  date?: number;
 };

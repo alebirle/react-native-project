@@ -6,6 +6,16 @@ import { useAppContext } from '../App.provider';
 function Home({ navigation }) {
   const appContext = useAppContext();
 
+  const startDisabled = React.useCallback((): boolean => {
+    return (
+      !appContext.currentGame.xPlayer.name ||
+      !appContext.currentGame.oPlayer.name
+    );
+  }, [
+    appContext.currentGame.oPlayer.name,
+    appContext.currentGame.xPlayer.name,
+  ]);
+
   return (
     <View>
       <Text style={styles.greeting}>Please type your names:</Text>
@@ -28,8 +38,12 @@ function Home({ navigation }) {
         }
       />
       <TouchableOpacity
-        style={styles.button}
+        style={[
+          styles.button,
+          startDisabled() ? styles.disabled : styles.enabled,
+        ]}
         onPress={() => navigation.navigate('Game')}
+        disabled={startDisabled()}
       >
         <Text style={styles.text}>Start game</Text>
       </TouchableOpacity>
@@ -42,6 +56,7 @@ const styles = StyleSheet.create({
   button: {
     width: 200,
     height: 40,
+    marginVertical: 3,
     alignSelf: 'center',
     backgroundColor: 'skyblue',
     borderRadius: 1,
@@ -63,9 +78,15 @@ const styles = StyleSheet.create({
     height: 40,
     width: 200,
     borderWidth: 1,
-    marginVertical: 5,
+    marginVertical: 3,
     alignSelf: 'center',
     borderRadius: 1,
     padding: 5,
+  },
+  disabled: {
+    opacity: 0.7,
+  },
+  enabled: {
+    opacity: 1,
   },
 });
